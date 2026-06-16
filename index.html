@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foresight Estratégico: Ensino Superior & Engenharias 2026-2030</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM (Stable Versions) -->
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel Standalone (Stable Version) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
+    
+    <!-- Lucide Icons (Vanilla UMD) -->
+    <script src="https://unpkg.com/lucide@0.292.0/dist/umd/lucide.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+        }
+        .apple-shadow {
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+            transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .apple-shadow:hover {
+            box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+            transform: translateY(-4px);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark-glass {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Oculta scrollbar mas permite rolagem */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- NATIVE ICON GENERATOR ---
+        const Icon = ({ icon, size = 24, className = '', strokeWidth = 2 }) => {
+            const iconNodes = window.lucide?.icons?.[icon];
+            if (!iconNodes) return <svg className={className} width={size} height={size} />;
+            return (
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width={size}
+                    height={size}
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={strokeWidth}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className={className}
+                >
+                    {iconNodes.map(([tag, attrs], i) => React.createElement(tag, { ...attrs, key: i }))}
+                </svg>
+            );
+        };
+
+        // --- IMAGE CARD COMPONENT ---
+        const ImageCard = ({ image, icon, title, subtitle, desc, insight, source }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            
+            return (
+                <div className="bg-white rounded-[2rem] overflow-hidden apple-shadow cursor-pointer flex flex-col h-full border border-gray-100/50" onClick={() => setIsOpen(!isOpen)}>
+                    <div className="h-48 md:h-56 w-full overflow-hidden relative">
+                        <img src={image} alt={title} className="w-full h-full object-cover transition-transform duration-700 hover:scale-105" loading="lazy" />
+                    </div>
+                    
+                    <div className="p-6 md:p-8 flex-grow flex flex-col bg-white">
+                        <div className="flex justify-between items-start mb-2">
+                            <h3 className="text-xl font-bold tracking-tight text-[#1d1d1f] pr-4">{title}</h3>
+                            <div className="shrink-0 p-1.5 rounded-full bg-gray-50 text-gray-400">
+                                {isOpen ? <Icon icon="chevronUp" size={18} /> : <Icon icon="chevronDown" size={18} />}
+                            </div>
+                        </div>
+                        {subtitle && <p className="text-sm font-semibold text-blue-600 mb-3">{subtitle}</p>}
+                        <p className="text-[#86868b] text-sm leading-relaxed mb-4">{desc}</p>
+                        
+                        <div className={`grid transition-all duration-500 ease-in-out mt-auto
+                            ${isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
+                            <div className="overflow-hidden">
+                                <div className="pt-4 border-t border-gray-100 mt-2">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <Icon icon="target" size={14} className="text-blue-500" />
+                                        <h4 className="text-[11px] font-bold uppercase tracking-widest text-blue-500">Insight Estratégico</h4>
+                                    </div>
+                                    <p className="text-sm text-gray-700 leading-relaxed mb-4">{insight}</p>
+                                    <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400">Fonte: {source}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- STAT CARD COMPONENT ---
+        const StatCard = ({ label, value, sub, insight, source }) => {
+            const [isOpen, setIsOpen] = useState(false);
+            return (
+                <div onClick={() => setIsOpen(!isOpen)} className="bg-white p-6 md:p-8 rounded-3xl apple-shadow cursor-pointer relative overflow-hidden h-full flex flex-col">
+                    <div className="flex justify-between items-start mb-4">
+                        <p className="text-[#86868b] text-sm font-semibold uppercase tracking-wider">{label}</p>
+                        <Icon icon="info" size={18} className="text-blue-400" />
+                    </div>
+                    <h3 className="text-4xl md:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-2">{value}</h3>
+                    <p className="text-sm text-[#515154] font-medium leading-relaxed">{sub}</p>
+                    
+                    <div className={`grid transition-all duration-500 ease-in-out mt-auto ${isOpen ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'}`}>
+                        <div className="overflow-hidden">
+                            <div className="pt-4 border-t border-gray-100">
+                                <p className="text-sm leading-relaxed text-gray-600 mb-3">{insight}</p>
+                                <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold">{source}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+
+        // --- INTERACTIVE HUB DATA ---
+        const hubData = {
+            nations: [
+                { image: "https://i.postimg.cc/RVN8YHNF/mit-engenharia.jpg", icon: "globe", title: "Estados Unidos", subtitle: "MIT, Stanford, Caltech", desc: "IA Aplicada, Computação Quântica e Aeroespacial.", insight: "Impulsionados pelo 'CHIPS Act', os EUA usam a engenharia de IA e investimentos maciços em 'reshoring' para reverter a dependência de semicondutores e retomar a soberania do hardware.", source: "Foresight 2026-2035" },
+                { image: "https://i.postimg.cc/7YFBQtFN/China.png", icon: "factory", title: "China", subtitle: "Tsinghua, Harbin Institute", desc: "Manufatura Avançada e Infraestrutura de Transição Energética.", insight: "O domínio não é mais apenas mão de obra barata. A China domina a engenharia de materiais para baterias de estado sólido e refino de terras raras, o 'backbone' global da transição verde.", source: "Foresight 2026-2035" },
+                { image: "https://i.postimg.cc/C5yN6ztR/Alemanha.jpg", icon: "cpu", title: "Alemanha e Suíça", subtitle: "TU Munich, Fraunhofer, ETH Zurich", desc: "Indústria 5.0, Robótica Colaborativa e Bioengenharia.", insight: "Pioneira na Indústria 4.0, a Alemanha agora lidera a transição 5.0, inserindo a colaboração humano-máquina. A Suíça dita as regras globais em engenharia climática e robótica de precisão.", source: "Foresight 2026-2035" },
+                { image: "https://i.postimg.cc/9046yR76/Singapura.png", icon: "network", title: "Singapura", subtitle: "NUS, NTU", desc: "Cidades Inteligentes e Gêmeos Digitais Urbanos.", insight: "Singapura possui o Gêmeo Digital mais avançado do mundo em escala nacional. Engenheiros simulam desde tráfego de drones até o impacto do aumento do nível do mar nas infraestruturas em tempo real.", source: "Foresight 2026-2035" },
+            ],
+            challenges: [
+                { image: "https://i.postimg.cc/Y944LRdC/Fragmentacao-Geopolitica.jpg", icon: "map", title: "Fragmentação Geopolítica", subtitle: "A Nova Guerra Fria", desc: "A dependência de cadeias de suprimentos globais tornou-se o maior risco estratégico.", insight: "Com a crise dos semicondutores (Taiwan) e dos minérios raros, a engenharia é forçada a focar em 'reshoring' (nacionalização da produção), exigindo o redesenho completo de malhas logísticas e parques fabris locais.", source: "WEF / Foresight" },
+                { image: "https://i.postimg.cc/c43jZ8NG/Dilema.png", icon: "shieldAlert", title: "O Dilema do 'Trust Deficit'", subtitle: "Responsabilidade Algorítmica", desc: "Se uma ponte projetada por Inteligência Artificial falhar, de quem é a culpa?", insight: "A validação técnica e ética dos projetos gerados por IA é o desafio crítico da década. O mercado exige 'Auditoria de IA' para garantir que modelos algorítmicos obedeçam às leis da física e aos limites de segurança humana.", source: "Revista Ensino Superior / WEF" },
+                { image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80", icon: "lock", title: "Segurança Ciberfísica", subtitle: "Infraestruturas Hackeáveis", desc: "O risco de ataques cibernéticos a barragens e redes elétricas.", insight: "Com a Indústria 4.0 e o advento do IoT, fábricas e infraestruturas vitais estão 100% conectadas. A engenharia moderna precisa embutir protocolos de cibersegurança e 'Zero Trust' no hardware e na planta industrial.", source: "WEF 2025" }
+            ],
+            gaps: [
+                { image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80", icon: "trendingDown", title: "O Apagão Qualitativo", subtitle: "O Perfil 'T-Shaped' Ausente", desc: "O mercado não teme mais a escassez numérica de engenheiros, mas a inaptidão tecnológica.", insight: "Profissionais formados no modelo tradicional não fluem em programação, IA e metodologias ágeis. A Indústria 5.0 exige perfis 'T-Shaped': base técnica profunda cruzada com habilidades transversais (dados, negócios, ESG).", source: "Mútua / Confea 2023" },
+                { image: "https://i.postimg.cc/T1fywDHn/Falta-de-engenheiro.png", icon: "alertOctagon", title: "A Máquina de Evasão", subtitle: "Desconexão Curricular", desc: "Taxas de abandono atingem 60% devido ao ensino árido e excessivamente teórico.", insight: "A deficiência do Ensino Médio em Matemática e Física afasta os jovens, mas o golpe final é o currículo engessado das IES, que falha em conectar o cálculo abstrato à solução de problemas reais e tecnologias contemporâneas nos primeiros semestres.", source: "Semesp / Mútua" },
+                { image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80", icon: "users", title: "Endogamia e Fuga de Cérebros", subtitle: "O Isolamento Institucional", desc: "Contratação interna nas IES trava inovação, enquanto talentos são exportados digitalmente.", insight: "A 'endogamia acadêmica' (contratar ex-alunos para o corpo docente) atinge 70% em instituições de elite no Brasil, limitando a diversidade. Ao mesmo tempo, o trabalho remoto global permite que os melhores talentos nacionais trabalhem para os EUA e Europa sem sair de casa.", source: "Revista Ensino Superior / Foresight" }
+            ],
+            alternatives: [
+                { image: "https://i.postimg.cc/RhtzjsRS/Bussula-OCDE.png", icon: "compass", title: "A Bússola OCDE 2030", subtitle: "O Ciclo AAR na Prática", desc: "Substituindo a aula expositiva pelo protagonismo ativo do estudante.", insight: "O framework exige dividir o tempo de aula em: 20% Antecipação (reflexão prévia), 60% Ação (projetos e resolução de problemas) e 20% Reflexão (metacognição). Essa metodologia obriga o estudante a assumir o controle do seu aprendizado.", source: "OCDE / Revista Ensino Superior" },
+                { image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80", icon: "award", title: "Microcredenciais e Portfólio", subtitle: "O Fim do Diploma Monolítico", desc: "Certificações modulares verificáveis que substituem o currículo estático.", insight: "A 'Economia da Confiança' exige provas de competência em tempo real. A Google já certifica milhões em Análise de Dados e IA. As IES precisam oferecer trilhas 'empilháveis' (stackable) que adaptam o conhecimento à velocidade da Indústria.", source: "Revista Ensino Superior" },
+                { image: "https://i.postimg.cc/m2qH3tcY/Homem-Maquina.webp", icon: "cpu", title: "Fusão Humano-Máquina", subtitle: "A IA como Tutora", desc: "A inteligência artificial deixa de ser ferramenta para atuar como coautora do aprendizado.", insight: "A transição para a aprendizagem híbrida definitiva inclui Tutores de IA e Avatares que monitoram o gap de habilidades do aluno e adaptam os exercícios. Laboratórios Remotos e Gêmeos Digitais permitem simulações práticas seguras e de baixo custo.", source: "WEF 2025" }
+            ]
+        };
+
+        const wefStats = [
+            { label: "O Choque Algorítmico", value: "100%", sub: "Alta projetada na demanda por Analistas de IA e Especialistas em Big Data.", insight: "As posições técnicas hiper-especializadas disparam, enquanto funções administrativas e de digitação de dados despencam rapidamente no horizonte 2025-2030.", source: "WEF - Future of Jobs 2025" },
+            { label: "Upskilling Estratégico", value: "85%", sub: "Das organizações globais priorizarão a requalificação imediata.", insight: "Para enfrentar a obsolescência acelerada, metade das empresas (50%) planeja não demitir, mas sim transicionar ativamente funcionários de funções em declínio para novas áreas estratégicas.", source: "WEF - Future of Jobs 2025" },
+            { label: "Ruptura Controlada", value: "39%", sub: "Das competências núcleo sofrerão ruptura (estabilização frente a 2023).", insight: "A taxa de instabilidade caiu (era 44%). O motivo? Metade da força de trabalho global agora vive em ciclos de treinamento contínuo, absorvendo os choques da automação com mais agilidade.", source: "WEF - Future of Jobs 2025" }
+        ];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('nations');
+
+            const tabs = [
+                { id: 'nations', label: 'Nações & Instituições', icon: 'globe' },
+                { id: 'challenges', label: 'Desafios Globais', icon: 'shieldAlert' },
+                { id: 'gaps', label: 'Gaps Estruturais', icon: 'trendingDown' },
+                { id: 'alternatives', label: 'Soluções Adotadas', icon: 'lightbulb' }
+            ];
+
+            return (
+                <div className="w-full bg-[#f5f5f7] min-h-screen pb-24 font-sans selection:bg-blue-500 selection:text-white">
+                    
+                    {/* HERO BANNER (Cinematic) */}
+                    <div className="relative h-[75vh] min-h-[600px] w-full mb-20 flex flex-col justify-center overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=2500&q=80" alt="Engenharia do Futuro" className="absolute inset-0 w-full h-full object-cover scale-105 transform origin-center" />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+                        
+                        <div className="relative z-10 max-w-7xl mx-auto px-6 w-full">
+                            <div className="dark-glass p-8 md:p-12 rounded-3xl max-w-3xl shadow-2xl border border-white/20 backdrop-blur-xl">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 font-semibold tracking-widest uppercase text-[10px] md:text-xs mb-6">
+                                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+                                    Relatório de Foresight 2026-2030
+                                </div>
+                                <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-6 leading-[1.1]">
+                                    A Reinvenção das <span className="text-blue-400">Engenharias.</span>
+                                </h1>
+                                <p className="text-lg md:text-xl text-gray-300 font-light max-w-2xl leading-relaxed">
+                                    Mapeamento estratégico: da geopolítica do talento global e transição ciberfísica até o apagão qualitativo e a Bússola Educacional da OCDE.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto px-6 space-y-32">
+                        
+                        {/* SEÇÃO WEF: NÚMEROS */}
+                        <section>
+                            <div className="mb-10 md:mb-16 max-w-3xl">
+                                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-4">O Novo Panorama do Trabalho.</h2>
+                                <p className="text-[#86868b] text-lg md:text-xl leading-relaxed font-light">
+                                    Dados do <strong className="text-gray-700">World Economic Forum (Future of Jobs 2025)</strong> expõem a urgência da requalificação e a colisão entre humanos e algoritmos.
+                                </p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {wefStats.map((stat, idx) => (
+                                    <StatCard key={idx} {...stat} />
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* INTERACTIVE HUB (NAÇÕES, GAPS, DESAFIOS E ALTERNATIVAS) */}
+                        <section className="bg-white/50 py-16 md:py-24 rounded-[3rem] px-4 md:px-8 border border-gray-200/50 shadow-sm">
+                            <div className="mb-12 text-center max-w-3xl mx-auto">
+                                <h2 className="text-3xl md:text-5xl font-bold tracking-tight text-[#1d1d1f] mb-4">O Ecossistema Global.</h2>
+                                <p className="text-[#86868b] text-lg md:text-xl font-light">
+                                    Navegue pelas forças que moldam o desenvolvimento tecnológico, as fraturas do ensino e os frameworks de solução.
+                                </p>
+                            </div>
+
+                            {/* TABS Navigation */}
+                            <div className="flex flex-wrap justify-center gap-3 mb-12">
+                                {tabs.map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex items-center gap-2 px-6 py-3.5 rounded-full text-sm font-bold transition-all duration-300 ease-out
+                                        ${activeTab === tab.id 
+                                            ? 'bg-[#1d1d1f] text-white shadow-lg transform -translate-y-1' 
+                                            : 'bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'}`}
+                                    >
+                                        <Icon icon={tab.icon} size={18} />
+                                        {tab.label}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* TABS Content */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 min-h-[400px]">
+                                {hubData[activeTab].map((item, idx) => (
+                                    <div key={`${activeTab}-${idx}`} className="animate-[fadeIn_0.5s_ease-out]">
+                                        <ImageCard {...item} />
+                                    </div>
+                                ))}
+                            </div>
+                        </section>
+
+                    </div>
+                    
+                    <footer className="mt-32 pt-12 pb-8 border-t border-gray-200 bg-white text-center px-6">
+                        <p className="text-xs font-bold text-gray-800 uppercase tracking-widest mb-4">Síntese de Inteligência Estratégica</p>
+                        <div className="flex flex-wrap justify-center gap-3 text-[11px] text-gray-500 max-w-4xl mx-auto">
+                            <span className="px-3 py-1.5 bg-gray-100 rounded-full border border-gray-200">WEF Future of Jobs (2025)</span>
+                            <span className="px-3 py-1.5 bg-gray-100 rounded-full border border-gray-200">OCDE Learning Compass 2030</span>
+                            <span className="px-3 py-1.5 bg-gray-100 rounded-full border border-gray-200">Mútua/Confea (2023)</span>
+                            <span className="px-3 py-1.5 bg-gray-100 rounded-full border border-gray-200">Revista Ensino Superior (2025)</span>
+                        </div>
+                    </footer>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body>
+</html>
